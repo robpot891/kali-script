@@ -1,3 +1,3 @@
 # Install-Script
 
-Personal post installation script for Kali Linux.
+Post-installation script for Kali Linux.
