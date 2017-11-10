@@ -1,37 +1,39 @@
 #!/bin/bash
-#-Metadata----------------------------------------------------#
-#  Filename: kali-rolling.sh             (Update: 2016-09-21) #
-#-Info--------------------------------------------------------#
-#  Personal post-install script for Kali Linux Rolling        #
-#-Author(s)---------------------------------------------------#
-#  g0tmilk ~ https://blog.g0tmi1k.com/                        #
-#-Operating System--------------------------------------------#
-#  Designed for: Kali Linux Rolling [x64] (VM - VMware)       #
-#     Tested on: Kali Linux 2016.2 x64/x84/full/light/mini/vm #
-#     Kali v1.x: https://g0tmi1k/os-scripts/master/kali1.sh   #
-#     Kali v2.x: https://g0tmi1k/os-scripts/master/kali2.sh   #
-#-Licence-----------------------------------------------------#
+#-METADATA----------------------------------------------------#
+#  Filename: kali.sh                     (Update: 11/10/2017) #
+#-INFO--------------------------------------------------------#
+#  Post-installation script for Kali Linux                    #
+#                                                             #
+#-AUTHOR(S)---------------------------------------------------#
+#  Creator   : g0tmilk ~ https://blog.g0tmi1k.com/            #
+#  Forked by : drkpasngr ~ https://drkpasngr.github.io/       #
+#                                                             #
+#-TARGET OPERATING SYSTEM-------------------------------------#
+#  Designed for: Kali Linux Rolling [x64] (VM - Virtualbox)   #
+#  Tested on   : N/A                                          #
+#                                                             #
+#-LICENSE-----------------------------------------------------#
 #  MIT License ~ http://opensource.org/licenses/MIT           #
-#-Notes-------------------------------------------------------#
-#  Run as root straight after a clean install of Kali Rolling #
+#                                                             #
+#-INSTRUCTIONS------------------------------------------------#
+#  1. Run as root after a clean install of Kali Linux.        #
+#     *  Create a clone or snapshot prior to any changes.     #
 #                             ---                             #
-#  You will need 25GB+ free HDD space before running.         #
+#  2. You will need 25GB+ free HDD space before running.      #
 #                             ---                             #
-#  Command line arguments:                                    #
-#    -burp     = Automates configuring Burp Suite (Community) #
-#    -dns      = Use OpenDNS and locks permissions            #
-#    -openvas  = Installs & configures OpenVAS vuln scanner   #
-#    -osx      = Changes to Apple keyboard layout             #
+#  3. Command line arguments:                                 #
+#      -burp     = Automates configuring Burp Suite           #
+#      -dns      = Use OpenDNS and locks permissions          #
+#      -osx      = Changes to Apple keyboard layout           #
 #                                                             #
 #    -keyboard <value> = Change the keyboard layout language  #
 #    -timezone <value> = Change the timezone location         #
+#                             ---                             #
+#  E.g. # bash kali.sh -burp -keyboard us -dns                #
 #                                                             #
-#  e.g. # bash kali-rolling.sh -burp -keyboard gb -openvas    #
-#                             ---                             #
-#  Will cut it up (so modular based), at a later date...      #
-#                             ---                             #
-#             ** This script is meant for _ME_. **            #
-#         ** EDIT this to meet _YOUR_ requirements! **        #
+#-DISCLAIMER--------------------------------------------------#
+#  ** This script configures Kali for _ME_. **                #
+#  ** EDIT it to meet _YOUR_ requirements! **                 #
 #-------------------------------------------------------------#
 
 
@@ -39,7 +41,7 @@ if [ 1 -eq 0 ]; then    # This is never true, thus it acts as block comments ;)
 ################################################################################
 ### One liner - Grab the latest version and execute! ###########################
 ################################################################################
-wget -qO kali-rolling.sh https://raw.github.com/g0tmi1k/os-scripts/master/kali-rolling.sh \
+wget -qO kali-rolling.sh https://raw.github.com/drkpasngr/os-scripts/master/kali-rolling.sh \
   && bash kali-rolling.sh -burp -keyboard gb -timezone "Europe/London"
 ################################################################################
 fi
