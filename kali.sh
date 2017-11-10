@@ -38,12 +38,12 @@
 
 
 if [ 1 -eq 0 ]; then    # This is never true, thus it acts as block comments ;)
-################################################################################
-### One liner - Grab the latest version and execute! ###########################
-################################################################################
-wget -qO kali-rolling.sh https://raw.github.com/drkpasngr/os-scripts/master/kali-rolling.sh \
-  && bash kali-rolling.sh -burp -keyboard gb -timezone "Europe/London"
-################################################################################
+##########################################################################################
+### One liner - Grab the latest version and execute! #####################################
+##########################################################################################
+wget -qO kali.sh https://raw.githubusercontent.com/drkpasngr/kali-script/master/kali.sh \
+  && bash kali.sh -burp -timezone "US/Chicago"
+##########################################################################################
 fi
 
 
@@ -52,13 +52,12 @@ fi
 
 ##### Location information
 keyboardApple=false         # Using a Apple/Macintosh keyboard (non VM)?                [ --osx ]
-keyboardLayout=""           # Set keyboard layout                                       [ --keyboard gb]
-timezone=""                 # Set timezone location                                     [ --timezone Europe/London ]
+keyboardLayout=""           # Set keyboard layout                                       [ --keyboard us]
+timezone=""                 # Set timezone location                                     [ --timezone US/Chicago ]
 
 ##### Optional steps
 burpFree=false              # Disable configuring Burp Suite (for Burp Pro users...)    [ --burp ]
 hardenDNS=false             # Set static & lock DNS name server                         [ --dns ]
-openVAS=false               # Install & configure OpenVAS (not everyone wants it...)    [ --openvas ]
 
 ##### (Optional) Enable debug mode?
 #set -x
@@ -92,9 +91,6 @@ while [[ "${#}" -gt 0 && ."${1}" == .-* ]]; do
 
     -dns|--dns )
       hardenDNS=true;;
-
-    -openvas|--openvas )
-      openVAS=true;;
 
     -burp|--burp )
       burpFree=true;;
@@ -132,13 +128,13 @@ fi
 #-Start----------------------------------------------------------------#
 
 
-##### Check if we are running as root - else this script will fail (hard!)
+##### Check if we are running as root - else this script will fail (Hard!)
 if [[ "${EUID}" -ne 0 ]]; then
   echo -e ' '${RED}'[!]'${RESET}" This script must be ${RED}run as root${RESET}" 1>&2
   echo -e ' '${RED}'[!]'${RESET}" Quitting..." 1>&2
   exit 1
 else
-  echo -e " ${BLUE}[*]${RESET} ${BOLD}Kali Linux rolling post-install script${RESET}"
+  echo -e " ${BLUE}[*]${RESET} ${BOLD}Post-installation script for Kali Linux.${RESET}"
   sleep 3s
 fi
 
@@ -154,13 +150,13 @@ export TERM=xterm
 
 
 ##### Are we using GNOME?
-if [[ $(which gnome-shell) ]]; then
-  ##### RAM check
-  if [[ "$(free -m | grep -i Mem | awk '{print $2}')" < 2048 ]]; then
-    echo -e '\n '${RED}'[!]'${RESET}" ${RED}You have <= 2GB of RAM and using GNOME${RESET}" 1>&2
-    echo -e " ${YELLOW}[i]${RESET} ${YELLOW}Might want to use XFCE instead${RESET}..."
-    sleep 15s
-  fi
+#if [[ $(which gnome-shell) ]]; then
+# ##### RAM check
+#  if [[ "$(free -m | grep -i Mem | awk '{print $2}')" < 2048 ]]; then
+#    echo -e '\n '${RED}'[!]'${RESET}" ${RED}You have <= 2GB of RAM and using GNOME${RESET}" 1>&2
+#    echo -e " ${YELLOW}[i]${RESET} ${YELLOW}Might want to use XFCE instead${RESET}..."
+#    sleep 15s
+#  fi
 
 
   ##### Disable its auto notification package updater
@@ -284,28 +280,6 @@ elif (dmidecode | grep -iq virtualbox); then
   (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}VirtualBox's guest additions${RESET}"
   apt -y -qq install virtualbox-guest-x11 \
     || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
-fi
-
-
-##### Check to see if there is a second Ethernet card (if so, set an static IP address)
-ip addr show eth1 &>/dev/null
-if [[ "$?" == 0 ]]; then
-  ##### Set a static IP address (192.168.155.175/24) on eth1
-  (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Setting a ${GREEN}static IP address${RESET} (${BOLD}192.168.155.175/24${RESET}) on ${BOLD}eth1${RESET}"
-  ip addr add 192.168.155.175/24 dev eth1 2>/dev/null
-  route delete default gw 192.168.155.1 2>/dev/null
-  file=/etc/network/interfaces.d/eth1.cfg; [ -e "${file}" ] && cp -n $file{,.bkup}
-  grep -q '^iface eth1 inet static' "${file}" 2>/dev/null \
-    || cat <<EOF > "${file}"
-auto eth1
-iface eth1 inet static
-    address 192.168.155.175
-    netmask 255.255.255.0
-    gateway 192.168.155.1
-    post-up route delete default gw 192.168.155.1
-EOF
-else
-  echo -e "\n\n ${YELLOW}[i]${RESET} ${YELLOW}Skipping eth1${RESET} (missing nic)..." 1>&2
 fi
 
 
@@ -448,10 +422,10 @@ if [[ $(which gnome-shell) ]]; then
   export DISPLAY=:0.0
   #-- Gnome Extension - Dash Dock (the toolbar with all the icons)
   gsettings set org.gnome.shell.extensions.dash-to-dock extend-height true      # Set dock to use the full height
-  gsettings set org.gnome.shell.extensions.dash-to-dock dock-position 'RIGHT'   # Set dock to the right
-  gsettings set org.gnome.shell.extensions.dash-to-dock dock-fixed true         # Set dock to be always visible
+  gsettings set org.gnome.shell.extensions.dash-to-dock dock-position 'LEFT'   # Set dock to the right
+  gsettings set org.gnome.shell.extensions.dash-to-dock dock-fixed false         # Set dock to be always visible
   gsettings set org.gnome.shell favorite-apps \
-    "['gnome-terminal.desktop', 'org.gnome.Nautilus.desktop', 'kali-wireshark.desktop', 'firefox-esr.desktop', 'kali-burpsuite.desktop', 'kali-msfconsole.desktop', 'gedit.desktop']"
+    "['gnome-terminal.desktop', 'org.gnome.Nautilus.desktop', 'firefox-esr.desktop', 'kali-burpsuite.desktop', 'sublime-text.desktop', 'gedit.desktop', 'pycharm.desktop', 'gnome-screenshot.desktop']"
   #-- Gnome Extension - Alternate-tab (So it doesn't group the same windows up)
   GNOME_EXTENSIONS=$(gsettings get org.gnome.shell enabled-extensions | sed 's_^.\(.*\).$_\1_')
   echo "${GNOME_EXTENSIONS}" | grep -q "alternate-tab@gnome-shell-extensions.gcampax.github.com" \
@@ -461,14 +435,16 @@ if [[ $(which gnome-shell) ]]; then
   echo "${GNOME_EXTENSIONS}" | grep -q "drive-menu@gnome-shell-extensions.gcampax.github.com" \
     || gsettings set org.gnome.shell enabled-extensions "[${GNOME_EXTENSIONS}, 'drive-menu@gnome-shell-extensions.gcampax.github.com']"
   #--- Workspaces
-  gsettings set org.gnome.shell.overrides dynamic-workspaces false                         # Static
+  gsettings set org.gnome.shell.overrides dynamic-workspaces true                          # Static
   gsettings set org.gnome.desktop.wm.preferences num-workspaces 3                          # Increase workspaces count to 3
   #--- Top bar
   gsettings set org.gnome.desktop.interface clock-show-date true                           # Show date next to time in the top tool bar
+  gsettings set org.gnome.desktop.interface clock-show-seconds true                        # Show seconds next to time in the top tool bar
+
   #--- Keyboard short-cuts
-  (dmidecode | grep -iq virtual) && gsettings set org.gnome.mutter overlay-key "Super_R"   # Change 'super' key to right side (rather than left key), if in a VM
+  (dmidecode | grep -iq virtual) && gsettings set org.gnome.mutter overlay-key "Alt_R"   # Change 'super' key to right side (rather than left key), if in a VM
   #--- Hide desktop icon
-  dconf write /org/gnome/nautilus/desktop/computer-icon-visible false
+  dconf write /org/gnome/nautilus/desktop/computer-icon-visible true
 else
   echo -e "\n\n ${YELLOW}[i]${RESET} ${YELLOW}Skipping GNOME${RESET}..." 1>&2
 fi
