@@ -151,7 +151,7 @@ export TERM=xterm
 
 
 ##### Are we using GNOME?
-#if [[ $(which gnome-shell) ]]; then
+if [[ $(which gnome-shell) ]]; then
   ##### Disable its auto notification package updater
   (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Disabling GNOME's ${GREEN}notification package updater${RESET} service ~ in case it runs during this script"
   export DISPLAY=:0.0
