@@ -43,7 +43,7 @@ if [ 1 -eq 0 ]; then    # This is never true, thus it acts as block comments ;)
 ### One liner - Grab the latest version and execute! #####################################
 ##########################################################################################
 wget -qO kali.sh https://raw.githubusercontent.com/AnasFullStack/kali-script/master/kali.sh \
-  && bash kali.sh -burp -timezone "Europe/Stockholm"
+  && bash kali.sh -burp -timezone "America/Toronto"
 ##########################################################################################
 fi
 
@@ -52,9 +52,9 @@ fi
 
 
 ##### Location information
-keyboardApple=true          # Using a Apple/Macintosh keyboard (non VM)?                [ --osx ]
+keyboardApple=false          # Using a Apple/Macintosh keyboard (non VM)?                [ --osx ]
 keyboardLayout="us"         # Set keyboard layout                                       [ --keyboard us]
-timezone="Europe/Stockholm" # Set timezone location                                     [ --timezone US/Chicago ]
+timezone="America/Toronto" # Set timezone location                                     [ --timezone US/Chicago ]
 
 ##### Optional steps
 burpFree=true              # Disable configuring Burp Suite (for Burp Pro users...)     [ --burp ]
@@ -283,9 +283,9 @@ if [[ "${hardenDNS}" != "false" ]]; then
   file=/etc/resolv.conf; [ -e "${file}" ] && cp -n $file{,.bkup}
   chattr -i "${file}" 2>/dev/null
   #--- Use OpenDNS DNS
-  echo -e 'nameserver 208.67.222.222\nnameserver 208.67.220.220' > "${file}"
+  #echo -e 'nameserver 208.67.222.222\nnameserver 208.67.220.220' > "${file}"
   #--- Use Google DNS
-  #echo -e 'nameserver 8.8.8.8\nnameserver 8.8.4.4' > "${file}"
+  echo -e 'nameserver 8.8.8.8\nnameserver 8.8.4.4' > "${file}"
   #--- Protect it
   chattr +i "${file}" 2>/dev/null
 else
@@ -410,7 +410,7 @@ if [[ $(which gnome-shell) ]]; then
     || gsettings set org.gnome.shell enabled-extensions "[${GNOME_EXTENSIONS}, 'drive-menu@gnome-shell-extensions.gcampax.github.com']"
   #--- Workspaces
   gsettings set org.gnome.shell.overrides dynamic-workspaces true                          # Static
-  gsettings set org.gnome.desktop.wm.preferences num-workspaces 3                          # Increase workspaces count to 3
+  gsettings set org.gnome.desktop.wm.preferences num-workspaces 1                          # Increase workspaces count to 3
   #--- Top bar
   gsettings set org.gnome.desktop.interface clock-show-date true                           # Show date next to time in the top tool bar
   gsettings set org.gnome.desktop.interface clock-show-seconds true                        # Show seconds next to time in the top tool bar
@@ -577,41 +577,6 @@ for FILE in /etc/bash.bashrc ~/.bashrc ~/.bash_aliases; do    #/etc/profile /etc
   sed -i 's/#alias/alias/g' "${FILE}"
 done
 
-##### Install ZSH & Oh-My-ZSH - root user.   Note:  'Open terminal here', will not work with ZSH.   Make sure to have tmux already installed
-(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}ZSH${RESET} & ${GREEN}Oh-My-ZSH${RESET} ~ unix shell"
-apt -y -qq install zsh git curl \
-  || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
-#--- Setup oh-my-zsh
-timeout 300 curl --progress -k -L -f "https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh" | zsh
-#--- Configure zsh
-file=~/.zshrc; [ -e "${file}" ] && cp -n $file{,.bkup}   #/etc/zsh/zshrc
-([[ -e "${file}" && "$(tail -c 1 ${file})" != "" ]]) && echo >> "${file}"
-grep -q 'interactivecomments' "${file}" 2>/dev/null \
-  || echo 'setopt interactivecomments' >> "${file}"
-grep -q 'ignoreeof' "${file}" 2>/dev/null \
-  || echo 'setopt ignoreeof' >> "${file}"
-grep -q 'correctall' "${file}" 2>/dev/null \
-  || echo 'setopt correctall' >> "${file}"
-grep -q 'globdots' "${file}" 2>/dev/null \
-  || echo 'setopt globdots' >> "${file}"
-grep -q '.bash_aliases' "${file}" 2>/dev/null \
-  || echo 'source $HOME/.bash_aliases' >> "${file}"
-grep -q '/usr/bin/tmux' "${file}" 2>/dev/null \
-  || echo '#if ([[ -z "$TMUX" && -n "$SSH_CONNECTION" ]]); then /usr/bin/tmux attach || /usr/bin/tmux new; fi' >> "${file}"   # If not already in tmux and via SSH
-#--- Configure zsh (themes) ~ https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
-#sed -i 's/ZSH_THEME=.*/ZSH_THEME="mh"/' "${file}"   # Other themes: mh, jreese,   alanpeabody,   candy,   terminalparty, kardan,   nicoulaj, sunaku
-#--- Configure oh-my-zsh
-sed -i 's/plugins=(.*)/plugins=(git git-extras tmux dirhistory python pip)/' "${file}"
-#--- Set zsh as default shell (current user)
-chsh -s "$(which zsh)"
-
-##### Install spacemacs - all users
-(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}spacemacs${RESET} ~ CLI text editor"
-apt -y -qq install emacs \
-  || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
-#--- add spacemacs.d
-git clone https://github.com/syl20bnr/spacemacs ~/.emacs.d
-
 ##### Install git - all users
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}git${RESET} ~ revision control"
 apt -y -qq install git \
@@ -647,13 +612,13 @@ if [[ -f "${file}" ]]; then
   echo -e ' '${RED}'[!]'${RESET}" ${file} detected. Skipping..." 1>&2
 else
   cat <<EOF > "${file}"
-#run post/windows/escalate/getsystem
+run post/windows/escalate/getsystem
 
 #run migrate -f -k
 #run migrate -n "explorer.exe" -k    # Can trigger AV alerts by touching explorer.exe...
 
-#run post/windows/manage/smart_migrate
-#run post/windows/gather/smart_hashdump
+run post/windows/manage/smart_migrate
+run post/windows/gather/smart_hashdump
 EOF
 fi
 file=~/.msf4/msfconsole.rc; [ -e "${file}" ] && cp -n $file{,.bkup}
